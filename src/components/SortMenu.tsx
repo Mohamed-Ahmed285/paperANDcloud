@@ -14,7 +14,7 @@ export function SortMenu({ value, onChange }: { value: SortKey; onChange: (v: So
     <Menu
       label={`Sort: ${SORT_LABELS[value]}`}
       trigger={<><ArrowUpDown size={15} aria-hidden /> <span className="hidden sm:inline">{SORT_LABELS[value]}</span><span className="sm:hidden">Sort</span></>}
-      triggerClassName="inline-flex min-h-10 items-center gap-2 rounded-xl border border-line bg-card px-3.5 text-sm transition-colors duration-150 hover:bg-surface"
+      triggerClassName="inline-flex min-h-10 items-center gap-2 rounded-full bg-surface px-3.5 text-sm transition-colors duration-150 hover:bg-line"
     >
       {(close) => (Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
         <MenuItem key={k} selected={k === value} onClick={() => { onChange(k); close(); }}>{SORT_LABELS[k]}</MenuItem>
