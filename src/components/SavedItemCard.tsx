@@ -93,7 +93,7 @@ export function SavedItemCard({
   const tags = fixed ? item.tags.slice(0, 2) : item.tags;
   const extra = item.tags.length - tags.length;
   const sub = dark ? "text-white/75" : tinted ? "text-ink/70" : "text-muted";
-  const panel = `flex shrink-0 items-center justify-center overflow-hidden rounded-t-[22px] bg-surface ${fixed ? "h-48" : "h-36"}`;
+  const panel = `flex shrink-0 items-center justify-center overflow-hidden rounded-t-[22px] bg-surface ${fixed ? "h-48" : "h-48"}`;
 
   return (
     <article
