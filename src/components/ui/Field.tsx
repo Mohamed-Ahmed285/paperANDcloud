@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 export const inputClass =
-  "block w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-[15px] text-ink placeholder:text-muted/80 transition-colors duration-150 hover:border-accent/50 focus-visible:border-accent aria-[invalid=true]:border-danger disabled:opacity-60";
+  "block w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-[15px] text-ink placeholder:text-muted/80 transition-colors duration-150 hover:border-ink/40 focus-visible:border-ink aria-[invalid=true]:border-danger disabled:opacity-60";
 
 export function Field({
   label,

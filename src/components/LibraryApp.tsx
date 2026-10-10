@@ -5,18 +5,18 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { api, toApiError, type ApiError } from "@/lib/api";
 import type { CollectionInput, ItemInput } from "@/lib/schemas";
 import type { Collection, ContentType, SavedItem, Scope, SortKey } from "@/lib/types";
-import { applyView } from "@/lib/view";
+import { applyView, formatDate } from "@/lib/view";
 import { AppShell } from "./AppShell";
 import { CollectionDialog } from "./CollectionDialog";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "./EmptyState";
 import { ErrorState } from "./ErrorState";
-import { FilterBar } from "./FilterBar";
+import { FilterBar, type Layout } from "./FilterBar";
 import { LoadingSkeleton } from "./LoadingSkeleton";
-import { MasonryCell, MasonryGrid } from "./MasonryGrid";
-import { PageHeader } from "./PageHeader";
+import { CardGrid, MasonryCell, MasonryGrid } from "./MasonryGrid";
 import { QuickAddDialog } from "./QuickAddDialog";
 import { SavedItemCard } from "./SavedItemCard";
+import { SavedItemRow } from "./SavedItemRow";
 import { SearchBar } from "./SearchBar";
 import { Sidebar, type SyncState } from "./Sidebar";
 import { Button } from "./ui/Button";
@@ -33,6 +33,24 @@ export function LibraryApp() {
   const [type, setType] = useState<ContentType | "all">("all");
   const [tag, setTag] = useState<string | null>(null);
   const [sort, setSort] = useState<SortKey>("newest");
+  const [layout, setLayoutState] = useState<Layout>("grid");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("pc-layout");
+      if (saved === "grid" || saved === "masonry" || saved === "list") setLayoutState(saved);
+    } catch {
+      /* storage unavailable; keep the default */
+    }
+  }, []);
+  const setLayout = (l: Layout) => {
+    setLayoutState(l);
+    try {
+      localStorage.setItem("pc-layout", l);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const [editor, setEditor] = useState<{ item?: SavedItem } | null>(null);
   const [deleting, setDeleting] = useState<SavedItem | null>(null);
@@ -86,6 +104,18 @@ export function LibraryApp() {
     () => applyView(items, { scope, query: deferredQuery, type, tag: activeTag, sort }),
     [items, scope, deferredQuery, type, activeTag, sort],
   );
+  // Group by day when the order is chronological; alphabetical order stays one flat list.
+  const groups = useMemo(() => {
+    if (sort === "alpha") return [{ label: null as string | null, items: visible }];
+    const out: { label: string | null; items: SavedItem[] }[] = [];
+    for (const item of visible) {
+      const label = formatDate(sort === "updated" ? item.updatedAt : item.createdAt);
+      const last = out[out.length - 1];
+      if (last && last.label === label) last.items.push(item);
+      else out.push({ label, items: [item] });
+    }
+    return out;
+  }, [visible, sort]);
   const filtered = query.trim() !== "" || type !== "all" || activeTag !== null;
   const resetFilters = () => {
     setQuery("");
@@ -156,7 +186,6 @@ export function LibraryApp() {
       : activeCollection
         ? { title: activeCollection.name, description: "A collection of saved items." }
         : { title: "All items", description: "Everything you've saved, in one calm place." };
-  const subtitle = status.state === "ready" ? `${visible.length} ${visible.length === 1 ? "item" : "items"}` : "";
   const openAdd = () => setEditor({});
 
   const sidebar = ({ onNavigate }: { onNavigate?: () => void }) => (
@@ -207,43 +236,52 @@ export function LibraryApp() {
         </EmptyState>
       );
     }
+    const handlers = {
+      onToggleFavorite: toggleFavorite,
+      onEdit: (i: SavedItem) => setEditor({ item: i }),
+      onDelete: setDeleting,
+      onTagClick: (t: string) => setTag((cur) => (cur === t ? null : t)),
+      activeTag,
+    };
     return (
-      <MasonryGrid label="Saved items">
-        {visible.map((item) => (
-          <MasonryCell key={item.id}>
-            <SavedItemCard
-              item={item}
-              collectionName={item.collectionId ? collectionNames.get(item.collectionId) : undefined}
-              onToggleFavorite={toggleFavorite}
-              onEdit={(i) => setEditor({ item: i })}
-              onDelete={setDeleting}
-              onTagClick={(t) => setTag((cur) => (cur === t ? null : t))}
-              activeTag={activeTag}
-            />
-          </MasonryCell>
-        ))}
-      </MasonryGrid>
+      <div className="space-y-10">
+        {groups.map((g, gi) => {
+          const cards = g.items.map((item) => {
+            const collectionName = item.collectionId ? collectionNames.get(item.collectionId) : undefined;
+            if (layout === "list") return <li key={item.id}><SavedItemRow item={item} {...handlers} /></li>;
+            const card = <SavedItemCard item={item} collectionName={collectionName} layout={layout} {...handlers} />;
+            return layout === "masonry" ? <MasonryCell key={item.id}>{card}</MasonryCell> : <li key={item.id}>{card}</li>;
+          });
+          return (
+            <section key={g.label ?? gi} aria-label={g.label ?? "Items"}>
+              {g.label && (
+                <div className="mb-4">
+                  <h2 className="text-[26px] font-bold leading-tight tracking-tight">{g.label}</h2>
+                  <p className="text-[17px] text-ink/80">{g.items.length} {g.items.length === 1 ? "item" : "items"}</p>
+                </div>
+              )}
+              {layout === "masonry" ? <MasonryGrid>{cards}</MasonryGrid> : layout === "grid" ? <CardGrid>{cards}</CardGrid> : <ul className="space-y-2">{cards}</ul>}
+            </section>
+          );
+        })}
+      </div>
     );
   }
 
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-3 focus:py-2">Skip to content</a>
-      <AppShell sidebar={sidebar} onQuickAdd={openAdd}>
-        <PageHeader
-          title={heading.title}
-          description={subtitle ? `${heading.description} · ${subtitle}` : heading.description}
-          actions={
-            <Button variant="primary" className="hidden lg:inline-flex" onClick={openAdd}>
-              <Plus size={17} aria-hidden /> Quick add
-            </Button>
-          }
-        />
+      <AppShell sidebar={sidebar} onQuickAdd={openAdd} search={status.state === "ready" && items.length > 0 ? <SearchBar value={query} onChange={setQuery} /> : null}>
+        {scope.kind === "all" ? (
+          <h1 className="sr-only">All items</h1>
+        ) : (
+          <div className="mb-4 flex items-center gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight">{heading.title}</h1>
+            <button type="button" onClick={() => setScope({ kind: "all" })} className="rounded-full px-3 py-1 text-sm font-medium text-accent-strong hover:bg-surface">Back to all</button>
+          </div>
+        )}
         {status.state === "ready" && items.length > 0 && (
-          <>
-            <div className="mb-4 flex gap-3"><SearchBar value={query} onChange={setQuery} /></div>
-            <FilterBar type={type} onType={setType} tag={activeTag} tags={allTags} onTag={setTag} sort={sort} onSort={setSort} onReset={resetFilters} filtered={filtered} />
-          </>
+          <FilterBar type={type} onType={setType} tag={activeTag} tags={allTags} onTag={setTag} sort={sort} onSort={setSort} layout={layout} onLayout={setLayout} onReset={resetFilters} filtered={filtered} />
         )}
         {renderBody()}
       </AppShell>

@@ -110,11 +110,15 @@ The browser only sees `/api/*` and its own typed shapes, never JSONBin's respons
 
 ## Design notes & deliberate choices
 
-- **Palette** is exactly the Paper & Cloud set, exposed as CSS variables and Tailwind tokens
-  (`bg-canvas`, `bg-card`, `bg-surface`, `border-line`, `text-ink`, `text-muted`, `text-accent`).
-  One addition: `--accent-strong` (`#2563EB`), a deeper step of the accent used for button fills and blue
-  text, because `#3B82F6` on white is ~3.7:1 and fails WCAG AA for small text. `#3B82F6` itself is used for
-  focus rings, icons and indicators. Change `--accent-strong` to `#3B82F6` in `globals.css` if you prefer strict fidelity.
+- **Palette** (restyled to match a reference screenshot; sampled from the image): black ink `#111`, shell-white page `#FBF8F3`,
+  white cards, `#F1F3F2` gray surfaces, tile colours teal `#CAEEEC`, sand `#F7E09C` and slate `#575E66`. All are CSS variables at the
+  top of `src/app/globals.css`. Notes alternate teal/sand (chosen from the item ID, so stable); quotes use the slate tile with white text.
+  Muted text is `#6F7472` rather than the screenshot's lighter gray, to keep AA contrast.
+- **Type:** Source Sans 3 for the whole UI (as in the reference), Lora for quotes and the logo's ampersand, and Special Elite
+  (a typewriter face) for the "Paper / Cloud" wordmark, set on a slightly tilted paper slip with faint grain (`.pc-paper`).
+- **Layout:** top bar (menu, search pill, Add), text tabs for content types, items grouped under date headings
+  (newest/oldest/updated sorts; alphabetical is one flat list). Three views: uniform **grid** (default), **masonry**, **list**;
+  the choice is remembered in localStorage. Collections, favorites and tags live in the slide-out menu.
 - **Masonry** uses CSS grid row-spans (each card measured with `ResizeObserver`) rather than CSS `columns`,
   so DOM/tab order equals visual reading order. Column count uses container queries (adapts beside the sidebar).
 - **Dialogs** use native `<dialog>` (focus trap, Escape, inert background). Forms remount on each open, so they reset.

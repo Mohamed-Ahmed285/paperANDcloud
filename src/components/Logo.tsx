@@ -1,12 +1,17 @@
+/** Black tile with a big "&", plus the words typed on a slip of paper. */
 export function Logo() {
   return (
-    <div className="flex items-center gap-2.5">
-      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-        <rect width="32" height="32" rx="9" fill="var(--surface)" stroke="var(--border)" />
-        <rect x="8" y="7" width="12" height="16" rx="3" fill="var(--card)" stroke="var(--accent)" strokeWidth="1.5" />
-        <circle cx="21" cy="21" r="5" fill="var(--accent)" />
-      </svg>
-      <span className="text-[17px] font-semibold tracking-tight">Paper &amp; Cloud</span>
+    <div className="flex items-center gap-2.5" aria-label="Paper & Cloud" role="img">
+      <span aria-hidden className="flex size-11 items-center justify-center rounded-xl bg-ink pb-1 font-serif text-[34px] font-bold italic leading-none text-bg">
+        &amp;
+      </span>
+      <span
+        aria-hidden
+        className="pc-paper hidden -rotate-2 flex-col rounded-[3px] border border-line px-2.5 py-1 font-type text-[15px] leading-[1.15] tracking-tight text-ink shadow-[1px_2px_0_rgba(17,17,17,0.08)] min-[420px]:flex"
+      >
+        <span>Paper</span>
+        <span>Cloud</span>
+      </span>
     </div>
   );
 }

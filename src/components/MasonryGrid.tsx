@@ -57,3 +57,14 @@ export function SkeletonCell({ height }: { height: number }) {
     </div>
   );
 }
+
+/** Uniform-height grid (cards set their own fixed height). */
+export function CardGrid({ children, label }: { children: ReactNode; label?: string }) {
+  return (
+    <div className="@container">
+      <ul aria-label={label} className="grid grid-cols-1 gap-5 @xl:grid-cols-2 @4xl:grid-cols-3 @6xl:grid-cols-4">
+        {children}
+      </ul>
+    </div>
+  );
+}

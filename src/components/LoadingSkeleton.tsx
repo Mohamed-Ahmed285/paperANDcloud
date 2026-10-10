@@ -1,16 +1,14 @@
-import { MasonryGrid, SkeletonCell } from "./MasonryGrid";
-
-const HEIGHTS = [180, 260, 150, 220, 300, 170, 240, 190];
+import { CardGrid } from "./MasonryGrid";
 
 export function LoadingSkeleton() {
   return (
     <div aria-busy="true" aria-live="polite">
       <span className="sr-only">Loading your library…</span>
-      <MasonryGrid>
-        {HEIGHTS.map((h, i) => (
-          <SkeletonCell key={i} height={h} />
+      <CardGrid>
+        {Array.from({ length: 8 }, (_, i) => (
+          <li key={i} role="presentation"><div className="pc-skeleton h-[272px] rounded-2xl border border-line" /></li>
         ))}
-      </MasonryGrid>
+      </CardGrid>
     </div>
   );
 }
