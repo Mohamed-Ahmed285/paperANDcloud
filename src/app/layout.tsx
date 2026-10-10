@@ -10,6 +10,16 @@ const typewriter = Special_Elite({ subsets: ["latin"], weight: "400", variable: 
 export const metadata: Metadata = {
   title: "Paper & Cloud",
   description: "A calm personal library for links, quotes, snippets, images and documents.",
+  openGraph: {
+    title: "Paper & Cloud",
+    description: "A calm personal library for links, quotes, snippets, images and documents.",
+    type: "website",
+    images: ["/opengraph-image.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/opengraph-image.jpg"],
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#FBF8F3" };
