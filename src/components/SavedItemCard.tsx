@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { SavedItem } from "@/lib/types";
 import { domainOf, formatBytes } from "@/lib/view";
 import { ItemActions, type ItemHandlers } from "./ItemActions";
+import { LinkPreview } from "./LinkPreview";
 import { TagBadge } from "./TagBadge";
 import { fileExt, footerLabel, isDark, isTinted, tintFor } from "./itemMeta";
 import { TYPE_META } from "./typeMeta";
@@ -71,10 +72,17 @@ export function SavedItemCard({ item, collectionName, layout, onToggleFavorite, 
         </div>
       )}
       {item.type === "link" && (
-        <div className={`${panel} flex-col gap-2 text-muted`}>
-          <Link2 size={26} aria-hidden />
-          <span className="max-w-[85%] truncate text-base font-semibold text-ink/80">{domain ?? item.url}</span>
-        </div>
+        <LinkPreview
+          url={item.url!}
+          title={item.title}
+          className={`${panel} flex-col gap-2 text-muted`}
+          fallback={
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2">
+              <Link2 size={26} aria-hidden />
+              <span className="max-w-[85%] truncate text-base font-semibold text-ink/80">{domain ?? item.url}</span>
+            </div>
+          }
+        />
       )}
 
       <div className="flex min-h-0 flex-1 flex-col p-5 pb-3">
