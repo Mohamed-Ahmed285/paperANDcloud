@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* Paper & Cloud palette */
+:root {
+  --bg: #f8fafc;        /* canvas */
+  --card: #ffffff;      /* cards, dialogs, popovers */
+  --surface: #eff6ff;   /* selected filters, tag backgrounds */
+  --border: #dce5ef;    /* borders, dividers, input outlines */
+  --ink: #172b4d;       /* primary text */
+  --muted: #64748b;     /* secondary text */
+  --accent: #3b82f6;    /* focus rings, icons, active indicators */
+  /* A deeper step of the accent for text and button fills, so white-on-blue and
+     blue-on-#EFF6FF reach WCAG AA contrast (#3B82F6 alone is ~3.7:1 against white). */
+  --accent-strong: #2563eb;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+}
+
+@theme inline {
+  --color-canvas: var(--bg);
+  --color-card: var(--card);
+  --color-surface: var(--surface);
+  --color-line: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-source), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-lora), ui-serif, Georgia, serif;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+dialog {
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes pc-pulse {
+  50% { opacity: 0.55; }
+}
+.pc-skeleton {
+  background: var(--surface);
+  animation: pc-pulse 1.6s ease-in-out infinite;
+}
