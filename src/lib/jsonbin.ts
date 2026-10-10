@@ -35,7 +35,7 @@ function getConfig(): Config {
   if (!/^[A-Za-z0-9]{10,40}$/.test(binId!)) {
     throw new AppError("not_configured", 503, "JSONBIN_BIN_ID doesn't look like a valid bin ID.");
   }
-  const key = !placeholder(access) ? access! : master!;
+const key = !placeholder(access) ? access! : master!;
   // JSONBin keys look like "$2a$10$…" (60 chars). Next.js expands "$…" in .env files as variable
   // references, silently mangling an unescaped key. Detect that and say so, instead of a vague 401.
   if (!key.startsWith("$2")) {
@@ -47,7 +47,7 @@ function getConfig(): Config {
       "key does not start with $2 (likely $-expansion in .env)",
     );
   }
-  const headers = !placeholder(access) ? { "X-Access-Key": key } : { "X-Master-Key": key };
+  const headers: Record<string, string> = !placeholder(access) ? { "X-Access-Key": key } : { "X-Master-Key": key };
   return { binId: binId!, headers };
 }
 
