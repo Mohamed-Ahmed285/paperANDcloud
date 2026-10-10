@@ -1,21 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Lora, Source_Sans_3 } from "next/font/google";
+import { Lora, Source_Sans_3, Special_Elite } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const source = Source_Sans_3({ subsets: ["latin"], variable: "--font-source", display: "swap" });
 const lora = Lora({ subsets: ["latin"], variable: "--font-lora", display: "swap", style: ["normal", "italic"] });
+// Typewriter face for the "Paper / Cloud" wordmark
+const typewriter = Special_Elite({ subsets: ["latin"], weight: "400", variable: "--font-typewriter", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Paper & Cloud",
   description: "A calm personal library for links, quotes, snippets, images and documents.",
 };
 
-export const viewport: Viewport = { themeColor: "#F8FAFC" };
+export const viewport: Viewport = { themeColor: "#FBF8F3" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${source.variable} ${lora.variable}`}>
+    <html lang="en" className={`${source.variable} ${lora.variable} ${typewriter.variable}`}>
       <body>{children}</body>
     </html>
   );
